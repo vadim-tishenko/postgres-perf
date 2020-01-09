@@ -21,7 +21,7 @@ public class ReadCSVFromFile {
         try (InputStream inputFS = new FileInputStream(inputF)) {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputFS));
             // skip the header of the csv
-            Stream<String> skip = br.lines().skip(1).limit(1000000L * 5);
+            Stream<String> skip = br.lines().skip(1).limit(1_000_000L * 15);
             log.info("1");
             inputList = skip.map(mapToItem).collect(Collectors.toList());
             log.info("2");

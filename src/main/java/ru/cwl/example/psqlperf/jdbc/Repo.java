@@ -1,9 +1,16 @@
 package ru.cwl.example.psqlperf.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
+import org.postgresql.copy.CopyIn;
+import org.postgresql.copy.CopyManager;
+import org.postgresql.core.BaseConnection;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -70,8 +77,34 @@ public class Repo {
             }
 
         } catch (SQLException e) {
-            log.error("",e);
+            log.error("", e);
         }
 
+    }
+
+    public void batchCopySave(List<TfcSensor> list) {
+        log.info("start save: {}", list.size());
+        String sql = "insert into tfc_sensor(id_tr, gmt_event_time, n_num, val, gmt_sys_time) values (?,?,?,?,?)";
+        String a = "1,2,3,4,5\n2,3,4,5,6\n";
+        byte bytes[] = a.getBytes();
+
+        try (Connection connection = dataSource.getConnection()) {
+            final CopyManager copyManager = new CopyManager((BaseConnection) connection);
+
+
+
+            CopyIn cpIn = copyManager.copyIn("COPY tfc_sensor(id_tr, gmt_event_time, n_num, val, gmt_sys_time) FROM STDIN WITH DELIMITER ','");
+
+            cpIn.writeToCopy(bytes,0,   bytes.length);
+            long res = cpIn.endCopy();
+            log.info("finish: {}",res);
+   /*         final BufferedReader from = new BufferedReader(new FileReader("C:/Users/gord/Desktop/testdata.csv"));
+
+            long rowsInserted = copyManager.copyIn("COPY table1 FROM STDIN (FORMAT csv, HEADER)", from);
+
+            System.out.printf("%d row(s) inserted%n", rowsInserted);*/
+        } catch (SQLException e) {
+            log.error("", e);
+        }
     }
 }

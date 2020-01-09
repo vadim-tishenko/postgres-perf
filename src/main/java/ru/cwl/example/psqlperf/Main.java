@@ -24,6 +24,6 @@ public class Main {
         log.info("s:{}",result.size());
         List<TfcSensor> l2 = result.subList(0, 15_000_000);
         Repo repo=new Repo();
-        repo.batchSave(l2);
+        repo.batchCopySave(l2);
     }
 }

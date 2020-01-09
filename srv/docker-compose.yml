@@ -1,0 +1,8 @@
+version: '2'
+services:
+  some-postgres:
+    image: 'postgres:12.1'
+    environment:
+      POSTGRES_PASSWORD: '123'
+    ports:
+      - '54321:5432'

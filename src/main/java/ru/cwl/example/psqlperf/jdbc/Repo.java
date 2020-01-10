@@ -7,10 +7,6 @@ import org.postgresql.core.BaseConnection;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -84,25 +80,44 @@ public class Repo {
 
     public void batchCopySave(List<TfcSensor> list) {
         log.info("start save: {}", list.size());
-        String sql = "insert into tfc_sensor(id_tr, gmt_event_time, n_num, val, gmt_sys_time) values (?,?,?,?,?)";
-        String a = "1,2,3,4,5\n2,3,4,5,6\n";
-        byte bytes[] = a.getBytes();
+        final int batchSize = 200_000;
+//        String sql = "insert into tfc_sensor(id_tr, gmt_event_time, n_num, val, gmt_sys_time) values (?,?,?,?,?)";
+//        String a = "1,2,3,4,5\n2,3,4,5,6\n";
+        byte bytes[] = {};//a.getBytes();
 
         try (Connection connection = dataSource.getConnection()) {
             final CopyManager copyManager = new CopyManager((BaseConnection) connection);
 
+            int count = 0;
+
+            StringBuilder sb = new StringBuilder();
+
+            for (TfcSensor t : list) {
+                sb.append(t.getIdTr()).append(',');
+                sb.append(t.getGmtEventTime()).append(',');
+                sb.append(t.getnNum()).append(',');
+                sb.append(t.getVal()).append(',');
+                sb.append(t.getGmtSysTime()).append('\n');
+
+                count++;
+                if (count == batchSize) {
+                    log.info("start convert ty bytes");
+                    bytes = sb.toString().getBytes();
+                    log.info("start save: {}", bytes.length);
+                    CopyIn cpIn = copyManager.copyIn("COPY tfc_sensor(id_tr, gmt_event_time, n_num, val, gmt_sys_time) FROM STDIN WITH DELIMITER ','");
+                    cpIn.writeToCopy(bytes, 0, bytes.length);
+                    long res = cpIn.endCopy();
+                    log.info("finish: {}", res);
+                    sb = new StringBuilder();
+                    count = 0;
+                }
+            }
 
 
-            CopyIn cpIn = copyManager.copyIn("COPY tfc_sensor(id_tr, gmt_event_time, n_num, val, gmt_sys_time) FROM STDIN WITH DELIMITER ','");
-
-            cpIn.writeToCopy(bytes,0,   bytes.length);
-            long res = cpIn.endCopy();
-            log.info("finish: {}",res);
    /*         final BufferedReader from = new BufferedReader(new FileReader("C:/Users/gord/Desktop/testdata.csv"));
-
             long rowsInserted = copyManager.copyIn("COPY table1 FROM STDIN (FORMAT csv, HEADER)", from);
-
             System.out.printf("%d row(s) inserted%n", rowsInserted);*/
+
         } catch (SQLException e) {
             log.error("", e);
         }

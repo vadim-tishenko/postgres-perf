@@ -21,25 +21,6 @@ import java.util.List;
 public class Repo {
     private final DataSource dataSource;
 
-//    public Repo() {
-//        /**
-//         * et the property databaseName. The settings for serverName, portNumber, user, and password
-//         *  * are optional. Note: these properties are declared in the superclass.
-//         */
-//        PGSimpleDataSource source = new PGSimpleDataSource();
-//        source.setDatabaseName("postgres");
-//        source.setServerNames(new String[]{"localhost"});
-//        source.setPortNumbers(new int[]{54321});
-//        source.setUser("postgres");
-//        source.setPassword("123");
-//        dataSource = source;
-//
-//    }
-    @PostConstruct
-    public void postConstr(){
-        System.out.println(dataSource);
-    }
-
     public void batchSave(List<TfcSensor> list) {
 
         log.info("start save: {}", list.size());

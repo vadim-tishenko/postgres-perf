@@ -6,11 +6,6 @@ import ru.cwl.example.psqlperf.jdbc.TfcSensor;
 
 import java.util.List;
 
-/***
-  "c://tmp//tfc_sensor_1559001600.csv";
-
- */
-
 @Slf4j
 public class Main {
     public static void main(String[] args) {

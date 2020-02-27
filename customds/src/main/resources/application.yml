@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: 'postgres'
+    password: '123'
+    type: org.postgresql.ds.PGSimpleDataSource
+    url: 'jdbc:postgresql://localhost:54321/postgres'
+    driver-class-name: org.postgresql.Driver
+
+
+#    PGSimpleDataSource source = new PGSimpleDataSource();
+#    source.setDatabaseName("postgres");
+#    source.setServerNames(new String[]{"localhost"});
+#    source.setPortNumbers(new int[]{54321});
+#    source.setUser("postgres");
+#    source.setPassword("123");
+#    dataSource = source;
+
+src:
+  file: 'c:/dev/tmp/tfc_sensor_1559001600.csv'
